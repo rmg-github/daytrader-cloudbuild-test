@@ -1,47 +1,43 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 
-substitutions:
-  _SECRET_PROJECT_ID: "daytrader-dev-security"
-  _BUCKET_NAME_KEY: "BUCKET_NAME"
-  _REGION_KEY: "REGION"
-
+# 从 Secret Manager 获取机密信息
 availableSecrets:
   secretManager:
-    - versionName: projects/${_SECRET_PROJECT_ID}/secrets/pgs-ins-bucket-name/versions/latest
-      env: 'BUCKET_NAME'
-    - versionName: projects/${_SECRET_PROJECT_ID}/secrets/pgs-ins-region/versions/latest
-      env: 'REGION'
+    - versionName: projects/daytrader-dev-security/secrets/pgs-ins-bucket-name/versions/latest
+      env: BUCKET_NAME
+    - versionName: projects/daytrader-dev-security/secrets/pgs-ins-region/versions/latest
+      env: REGION
 
 steps:
-  # 步骤 1: 检查或创建 GCS 存储桶
+  # 步骤 1: 设置 GCP 项目
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'config'
+      - 'set'
+      - 'project'
+      - '${PROJECT_ID}'
+
+  # 步骤 2: 检查或创建 GCS 存储桶
   - name: 'gcr.io/cloud-builders/gsutil'
     entrypoint: 'bash'
     args:
       - '-c'
       - |
-        set -e  # 遇到错误立即退出
-        
-        echo "BUCKET_NAME environment variable: $BUCKET_NAME"
-        echo "REGION environment variable: $REGION"
-        echo "PROJECT built-in variable: $PROJECT"
-        
-        if gsutil ls -b "gs://$BUCKET_NAME" >/dev/null 2>&1; then
-          echo "Bucket already exists: gs://$BUCKET_NAME"
+        if gsutil ls -b "gs://${BUCKET_NAME}" >/dev/null 2>&1; then
+          echo "Bucket already exists: gs://${BUCKET_NAME}"
         else
-          echo "Creating bucket: gs://$BUCKET_NAME in region $REGION"
-          gsutil mb -p "$PROJECT" -l "$REGION" "gs://$BUCKET_NAME"
-          echo "Created bucket: gs://$BUCKET_NAME"
+          gsutil mb -p "${PROJECT_ID}" -l "${REGION}" "gs://${BUCKET_NAME}"
+          echo "Created bucket: gs://${BUCKET_NAME}"
         fi
-    secretEnv: ['BUCKET_NAME', 'REGION']
 
-  # 步骤 2: 初始化 Terraform
+  # 步骤 3: 初始化 Terraform
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
       - 'init'
 
-  # 步骤 3: 执行 Terraform Plan
+  # 步骤 4: 执行 Terraform Plan
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
@@ -49,7 +45,7 @@ steps:
       - '-var-file=${_VAR_ENV_NAME}.tfvars'
       - '-out=plan.out'
 
-  # 步骤 4: 执行 Terraform Apply
+  # 步骤 5: 执行 Terraform Apply
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
@@ -57,8 +53,8 @@ steps:
       - '-auto-approve'
       - 'plan.out'
 
-  # 步骤 5: 完成部署
+  # 步骤 6: 完成部署
   - name: 'alpine'
     entrypoint: 'echo'
     args:
-      - "Deployment Complete for $PROJECT"
+      - '🎉 Deployment Complete for ${PROJECT_ID}'
