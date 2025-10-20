@@ -7,7 +7,7 @@
 # -------------------------------
 # Cloud SQL 实例
 # -------------------------------
-resource "google_sql_database_instance" "postgres_dev_instance" {
+resource "google_sql_database_instance" "postgres_instance" {
   name             = var.instance_id
   project          = var.project
   region           = var.region
