@@ -1,0 +1,15 @@
+instance_id = "daytrader-pgs-stage"
+edition     = "ENTERPRISE"
+tier        = "db-custom-4-16384"
+disk_type   = "PD_HDD"
+disk_size_gb = 100
+availability_type = "ZONAL"
+backup_enabled = true
+point_in_time_recovery = true
+backup_retention_count = 8
+transaction_log_retention_days = 7
+deletion_protection = true
+final_backup_enabled = true
+label_key         = "daytrader-stage"
+label_value       = "postgres-instance-stage"
+use_secret_manager = true

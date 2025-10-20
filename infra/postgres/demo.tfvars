@@ -1,0 +1,15 @@
+instance_id = "daytrader-pgs-demo"
+edition     = "ENTERPRISE"
+tier        = "db-custom-1-3840"
+disk_type   = "PD_HDD"
+disk_size_gb = 10
+disk_autoresize = false
+availability_type = "ZONAL"
+point_in_time_recovery = false
+backup_enabled = false
+deletion_protection = false
+final_backup_enabled = false
+label_key         = "daytrader-demo"
+label_value       = "postgres-instance-demo"
+use_secret_manager = false
+password_file = "./secrets/secrets.txt"

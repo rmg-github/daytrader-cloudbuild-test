@@ -1,0 +1,15 @@
+instance_id = "daytrader-pgs-prod"
+edition     = "ENTERPRISE_PLUS"
+tier        = "db-perf-optimized-N-8"
+disk_type   = "PD_SSD"
+disk_size_gb = 250
+availability_type = "REGIONAL"
+backup_enabled = true
+point_in_time_recovery = true
+backup_retention_count = 15
+transaction_log_retention_days = 14
+deletion_protection = true
+final_backup_enabled = true
+label_key         = "daytrader-prod"
+label_value       = "postgres-instance-prod"
+use_secret_manager = true

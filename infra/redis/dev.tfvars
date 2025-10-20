@@ -1,0 +1,11 @@
+instance_id           = "daytrader-redis-dev"
+tier                  = "BASIC"
+size_gb               = 8
+read_replicas_mode    = null
+read_replicas         = 0
+auth_enabled          = true
+enable_persistence    = false
+label_key             = "daytrader-dev"
+label_value           = "redis-instance-dev"
+use_secret_manager    = false
+password_file         = "./secrets/secrets.txt"
