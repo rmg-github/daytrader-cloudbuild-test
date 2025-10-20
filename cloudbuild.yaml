@@ -6,11 +6,11 @@ options:
 # 声明使用 Secret
 availableSecrets:
   secretManager:
-    - versionName: projects/${PROJECT_ID}/secrets/pgs-ins-bucket-name/versions/latest
+    - versionName: projects/daytrader-dev-security/secrets/pgs-ins-bucket-name/versions/latest
       env: PGS_INS_BUCKET_NAME
-    - versionName: projects/${PROJECT_ID}/secrets/pgs-ins-region/versions/latest
+    - versionName: projects/daytrader-dev-security/secrets/pgs-ins-region/versions/latest
       env: PGS_INS_REGION
-    - versionName: projects/${PROJECT_ID}/secrets/pgs-ins-project/versions/latest
+    - versionName: projects/daytrader-dev-security/secrets/pgs-ins-project/versions/latest
       env: PGS_INS_PROJECT
 
 steps:
