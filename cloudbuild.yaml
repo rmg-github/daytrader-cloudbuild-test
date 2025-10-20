@@ -3,6 +3,9 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 
+substitutions:
+  _SECRET_PROJECT_ID: "daytrader-dev-security"
+
 availableSecrets:
   secretManager:
     - versionName: projects/${_SECRET_PROJECT_ID}/secrets/pgs-ins-bucket-name/versions/latest
