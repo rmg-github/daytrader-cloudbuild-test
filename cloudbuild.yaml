@@ -17,11 +17,18 @@ steps:
     args:
       - '-c'
       - |
-        if gsutil ls -b "gs://${BUCKET_NAME}" >/dev/null 2>&1; then
-          echo "Bucket already exists: gs://${BUCKET_NAME}"
+        set -e  # 遇到错误立即退出
+        
+        echo "BUCKET_NAME environment variable: $BUCKET_NAME"
+        echo "REGION environment variable: $REGION"
+        echo "PROJECT built-in variable: $PROJECT"
+        
+        if gsutil ls -b "gs://$BUCKET_NAME" >/dev/null 2>&1; then
+          echo "Bucket already exists: gs://$BUCKET_NAME"
         else
-          gsutil mb -p "$PROJECT" -l "${REGION}" "gs://${BUCKET_NAME}"
-          echo "Created bucket: gs://${BUCKET_NAME}"
+          echo "Creating bucket: gs://$BUCKET_NAME in region $REGION"
+          gsutil mb -p "$PROJECT" -l "$REGION" "gs://$BUCKET_NAME"
+          echo "Created bucket: gs://$BUCKET_NAME"
         fi
     secretEnv: ['BUCKET_NAME', 'REGION']
 
