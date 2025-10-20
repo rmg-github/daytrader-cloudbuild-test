@@ -1,6 +1,10 @@
-# cloudbuild.yaml
 options:
   logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _BUCKET_NAME: 'bucket-daytrader-dev-data'
+  _REGION: 'asia-northeast3'
+  _PROJECT: 'daytrader-dev-data'
 
 steps:
   # 步骤 1: 设置 GCP 项目
@@ -9,7 +13,7 @@ steps:
       - 'config'
       - 'set'
       - 'project'
-      - 'daytrader-dev-data'
+      - '${_PROJECT}'
 
   # 步骤 2: 检查或创建 GCS 存储桶
   - name: 'gcr.io/cloud-builders/gsutil'
@@ -17,13 +21,11 @@ steps:
     args:
       - '-c'
       - |
-        BUCKET_NAME="bucket-daytrader-dev-data"
-        REGION="asia-northeast3"
-        if gsutil ls -b "gs://$BUCKET_NAME" >/dev/null 2>&1; then
-          echo "Bucket already exists: gs://$BUCKET_NAME"
+        if gsutil ls -b "gs://${_BUCKET_NAME}" >/dev/null 2>&1; then
+          echo "Bucket already exists: gs://${_BUCKET_NAME}"
         else
-          gsutil mb -p "$PROJECT_ID" -l "$REGION" "gs://$BUCKET_NAME"
-          echo "Created bucket: gs://$BUCKET_NAME"
+          gsutil mb -p "${_PROJECT}" -l "${_REGION}" "gs://${_BUCKET_NAME}"
+          echo "Created bucket: gs://${_BUCKET_NAME}"
         fi
 
   # 步骤 3: 初始化 Terraform
@@ -32,7 +34,7 @@ steps:
     args:
       - 'init'
 
-  # 步骤 4: 执行 Terraform Plan，选择不同的变量文件
+  # 步骤 4: 执行 Terraform Plan
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
@@ -52,4 +54,4 @@ steps:
   - name: 'alpine'
     entrypoint: 'echo'
     args:
-      - 'Deployment Complete'
+      - 'Deployment Complete for ${_PROJECT}'
