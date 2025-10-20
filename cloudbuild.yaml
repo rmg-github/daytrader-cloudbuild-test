@@ -1,7 +1,7 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 
-# 从 Secret Manager 获取机密信息
+# 从 Secret Manager 获取机密信息（projects/<secret-project>/secrets/<name>/versions/latest）
 availableSecrets:
   secretManager:
     - versionName: projects/daytrader-dev-security/secrets/pgs-ins-bucket-name/versions/latest
@@ -10,7 +10,7 @@ availableSecrets:
       env: REGION
 
 steps:
-  # 步骤 1: 设置 GCP 项目
+  # 步骤 1: 设置 GCP 项目（内置变量使用 $PROJECT_ID）
   - name: 'gcr.io/cloud-builders/gcloud'
     args:
       - 'config'
@@ -55,10 +55,3 @@ steps:
       - 'apply'
       - '-auto-approve'
       - 'plan.out'
-
-  # 步骤 6: 完成部署
-  - name: 'alpine'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - 'echo "Deployment Complete for $PROJECT_ID"'
