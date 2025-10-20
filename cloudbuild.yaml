@@ -1,7 +1,5 @@
 # cloudbuild.yaml
 
-# times 006
-
 options:
   logging: CLOUD_LOGGING_ONLY
 
@@ -11,20 +9,9 @@ availableSecrets:
       env: 'BUCKET_NAME'
     - versionName: projects/${_SECRET_PROJECT_ID}/secrets/pgs-ins-region/versions/latest
       env: 'REGION'
-    - versionName: projects/${_SECRET_PROJECT_ID}/secrets/pgs-ins-project/versions/latest
-      env: 'PROJECT'
 
 steps:
-  # 步骤 1: 设置 GCP 项目
-  - name: 'gcr.io/cloud-builders/gcloud'
-    args:
-      - 'config'
-      - 'set'
-      - 'project'
-      - '${PROJECT}'
-    secretEnv: ['PROJECT']
-
-  # 步骤 2: 检查或创建 GCS 存储桶
+  # 步骤 1: 检查或创建 GCS 存储桶
   - name: 'gcr.io/cloud-builders/gsutil'
     entrypoint: 'bash'
     args:
@@ -33,18 +20,18 @@ steps:
         if gsutil ls -b "gs://${BUCKET_NAME}" >/dev/null 2>&1; then
           echo "Bucket already exists: gs://${BUCKET_NAME}"
         else
-          gsutil mb -p "${PROJECT}" -l "${REGION}" "gs://${BUCKET_NAME}"
+          gsutil mb -p "$PROJECT" -l "${REGION}" "gs://${BUCKET_NAME}"
           echo "Created bucket: gs://${BUCKET_NAME}"
         fi
-    secretEnv: ['BUCKET_NAME', 'REGION', 'PROJECT']
+    secretEnv: ['BUCKET_NAME', 'REGION']
 
-  # 步骤 3: 初始化 Terraform
+  # 步骤 2: 初始化 Terraform
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
       - 'init'
 
-  # 步骤 4: 执行 Terraform Plan
+  # 步骤 3: 执行 Terraform Plan
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
@@ -52,7 +39,7 @@ steps:
       - '-var-file=${_VAR_ENV_NAME}.tfvars'
       - '-out=plan.out'
 
-  # 步骤 5: 执行 Terraform Apply
+  # 步骤 4: 执行 Terraform Apply
   - name: 'hashicorp/terraform'
     entrypoint: 'terraform'
     args:
@@ -60,9 +47,8 @@ steps:
       - '-auto-approve'
       - 'plan.out'
 
-  # 步骤 6: 完成部署
+  # 步骤 5: 完成部署
   - name: 'alpine'
     entrypoint: 'echo'
     args:
-      - 'Deployment Complete for ${PROJECT}'
-    secretEnv: ['PROJECT']
+      - "Deployment Complete for $PROJECT"
