@@ -1,9 +1,0 @@
-instance_id               = "daytrader-redis-prod"
-tier                      = "STANDARD_HA"
-size_gb                   = 16
-read_replicas             = 2
-auth_enabled              = true
-enable_persistence        = true
-label_key                 = "daytrader-prod"
-label_value               = "redis-instance-prod"
-use_secret_manager        = true
