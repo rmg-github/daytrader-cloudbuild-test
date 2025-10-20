@@ -1,6 +1,8 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 
+#007
+
 # 从 Secret Manager 获取机密信息（projects/<secret-project>/secrets/<name>/versions/latest）
 availableSecrets:
   secretManager:
