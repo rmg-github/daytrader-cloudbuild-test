@@ -16,7 +16,7 @@ steps:
       - 'config'
       - 'set'
       - 'project'
-      - '${PROJECT_ID}'
+      - '$PROJECT_ID'
 
   # 步骤 2: 检查或创建 GCS 存储桶
   - name: 'gcr.io/cloud-builders/gsutil'
@@ -24,12 +24,15 @@ steps:
     args:
       - '-c'
       - |
-        if gsutil ls -b "gs://${BUCKET_NAME}" >/dev/null 2>&1; then
-          echo "Bucket already exists: gs://${BUCKET_NAME}"
+        if gsutil ls -b "gs://$BUCKET_NAME" >/dev/null 2>&1; then
+          echo "Bucket already exists: gs://$BUCKET_NAME"
         else
-          gsutil mb -p "${PROJECT_ID}" -l "${REGION}" "gs://${BUCKET_NAME}"
-          echo "Created bucket: gs://${BUCKET_NAME}"
+          gsutil mb -p "$PROJECT_ID" -l "$REGION" "gs://$BUCKET_NAME"
+          echo "Created bucket: gs://$BUCKET_NAME"
         fi
+    secretEnv:
+      - BUCKET_NAME
+      - REGION
 
   # 步骤 3: 初始化 Terraform
   - name: 'hashicorp/terraform'
@@ -55,6 +58,7 @@ steps:
 
   # 步骤 6: 完成部署
   - name: 'alpine'
-    entrypoint: 'echo'
+    entrypoint: 'bash'
     args:
-      - '🎉 Deployment Complete for ${PROJECT_ID}'
+      - '-c'
+      - 'echo "Deployment Complete for $PROJECT_ID"'
