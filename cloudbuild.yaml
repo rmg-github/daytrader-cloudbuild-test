@@ -1,7 +1,7 @@
 # cloudbuild.yaml
 options:
   logging: CLOUD_LOGGING_ONLY
-  logsBucket: 'bucket-daytrader-dev-data'
+  logBucket: 'bucket-daytrader-dev-data'
 
 steps:
   # 步骤 1: 设置 GCP 项目
